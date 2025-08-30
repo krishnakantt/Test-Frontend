@@ -273,7 +273,7 @@
       document.getElementById("summaryForm").addEventListener("submit", async (e) => {
         e.preventDefault(); // stop page reload
         try {
-          const response = await fetch("https://mlbackend-for-hackthaon.onrender.com/predict/", {
+          const response = await fetch("https://ml-backend-for-hackathon.onrender.com/predict/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData)
