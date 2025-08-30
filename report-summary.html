@@ -243,45 +243,37 @@
     </div>
     <button class="back-btn" onclick="window.location.href='audit-report.html'">⬅ Back</button>
     <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        // Fill table with submitted values
-        document.querySelector("td[data-field='Unit_Cost']").innerText = urlParams.get("Unit_Cost") || "-";
-        document.querySelector("td[data-field='Order_Quantity']").innerText = urlParams.get("Order_Quantity") || "-";
-        document.querySelector("td[data-field='Unit_Sale']").innerText = urlParams.get("Unit_Sale") || "-";
-
-        const predictBtn = document.getElementById("predictBtn");
-        const resultDiv = document.getElementById("predictionResult");
-
-        predictBtn.addEventListener("click", () => {
-          const inputData = {
-            Unit_Cost: urlParams.get("Unit_Cost"),
-            Order_Quantity: urlParams.get("Order_Quantity"),
-            Unit_Sale: urlParams.get("Unit_Sale")
-          };
-
-          fetch("https://ml-backend-for-hackathon.onrender.com/predict/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(inputData),
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (data.prediction !== undefined) {
-              resultDiv.innerHTML = `<p><strong>Prediction:</strong> ${data.prediction}</p>`;
-            } else {
-              resultDiv.innerHTML = `<p style="color:red;">Error: ${JSON.stringify(data)}</p>`;
-                }
-            })
-            .catch(err => {
-                console.error("Error:", err);
-                resultDiv.innerHTML = `<p style="color:red;">Failed to fetch prediction</p>`;
-            });
+      const urlParams = new URLSearchParams(window.location.search);
+      const formData = {
+        Unit_Cost: urlParams.get("Unit_Cost"),
+        Order_Quantity: urlParams.get("Order_Quantity"),
+        Unit_Sale: urlParams.get("Unit_Sale"),
+        Customer_Type: urlParams.get("Customer_Type"),
+        Product_Name: urlParams.get("Product_Name"),
+      };
+      for (const key in formData) {
+        const cell = document.querySelector(`td[data-field='${key}']`);
+        if (cell) {
+          cell.innerText = formData[key];
+        }
+      }
+      document.getElementById("predict-btn").addEventListener("click", () => {
+        fetch("https://ml-backend-for-hackathon.onrender.com/predict/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          document.getElementById("prediction").innerText =
+            "Prediction: " + data.prediction;
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          document.getElementById("prediction").innerText =
+            "Error fetching prediction";
         });
-    });
-</script>
-
-
+      });
+    </script>
   </body>
 </html>
